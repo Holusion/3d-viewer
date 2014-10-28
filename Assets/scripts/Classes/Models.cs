@@ -23,12 +23,11 @@ namespace AssemblyCSharp
 			foreach (GameObject listObject in listObjects) {
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
 				scale (obj,def.collider);
-				
 				list.Add (new Model(obj));
 			}
 			if( list.Count == 0){
 				Debug.Log ("no objects found. Please add objects to your Resources/Objects folder");
-				list.Add (new Model(def));
+				list.Add (new Model((GameObject) GameObject.Instantiate (def, Vector3.zero, Quaternion.identity)));
 			}
 			this.setCurrent(0);
 		}
@@ -56,6 +55,7 @@ namespace AssemblyCSharp
 			Vector3 newScale = (currentScale* minRatio);
 			if(obj.transform){
 				obj.transform.localScale = newScale;
+				
 			}
 			return newScale;
 		}
@@ -77,4 +77,3 @@ namespace AssemblyCSharp
 
 	}
 }
-
