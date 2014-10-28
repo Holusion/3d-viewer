@@ -25,7 +25,16 @@ namespace AssemblyCSharp
 			if(Input.GetMouseButton(0)){
 				isActive = true;
 				Vector3 newPos = Input.mousePosition;
-				model.setRotation(newPos.x-pos.x,newPos.y-pos.y,newPos.z-pos.z);
+				Vector3 diff = newPos-pos;
+				diff.x = (float)Math.Floor(diff.x/30f)*30f;
+				diff.y = (float)Math.Floor(diff.y/30f)*30f;
+				if(diff.y>diff.x && diff.x<100){
+					diff.x = 0;
+				}else if(diff.y <100){
+					diff.y= 0;
+				}
+				Vector3 res = new Vector3(diff.y,diff.x,0);
+				model.setRotation(res);
 			}else{
 				pos = Input.mousePosition;
 				model.setRotation(0,0,0);
