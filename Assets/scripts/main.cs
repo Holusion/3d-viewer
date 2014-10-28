@@ -1,16 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Leap;
+using System.Collections.Generic;
+using AssemblyCSharp;
 
-public class NewBehaviourScript : MonoBehaviour {
-	Controller controller;
+public class Main : MonoBehaviour {
+	private LeapParser controller;
+	private MouseParser mouseParser;
+	private Model position;
+	private Models  objects;
+	private int current = 0;
 	// Use this for initialization
 	void Start () {
-		controller = new Controller();
+		/* models init */
+		GameObject def = GameObject.FindWithTag("default");
+		objects = new Models(def);
+		def.SetActive(false);
+		controller = new LeapParser(objects);
+		mouseParser = new MouseParser(objects);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Frame frame = controller.Frame();
+		if(!controller.update ()){
+			mouseParser.update ();
+		}
 	}
+
 }
