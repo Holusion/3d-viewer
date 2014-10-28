@@ -19,9 +19,11 @@ namespace AssemblyCSharp
 			this.models = models;
 			pos = Input.mousePosition;
 		}
-		public void update(){
+		public bool update(){
+			bool isActive =false;
 			Model model = models.getCurrent();
 			if(Input.GetMouseButton(0)){
+				isActive = true;
 				Vector3 newPos = Input.mousePosition;
 				model.setRotation(newPos.x-pos.x,newPos.y-pos.y,newPos.z-pos.z);
 			}else{
@@ -29,8 +31,10 @@ namespace AssemblyCSharp
 				model.setRotation(0,0,0);
 			}
 			if(Input.GetMouseButtonDown(1)){
+				isActive = true;
 				models.next();
 			}
+			return isActive;
 		}
 	}
 }

@@ -26,11 +26,14 @@ namespace AssemblyCSharp
 			this.setRotation(new Vector3(x,y,z));
 		}
 		public void setRotation(Vector3 rot){
-			this.obj.transform.Rotate(rot*Time.deltaTime);
+			this.obj.transform.RotateAround(Vector3.zero,rot,100*Time.deltaTime);
+			this.obj.transform.LookAt(Vector3.zero);
+			//this.obj.transform.Rotate(rot*Time.deltaTime);
 		}
 		public void setActive(bool active){
 			//MeshFilter mf = (MeshFilter) this.obj.GetComponent<MeshFilter>();
 			//Debug.Log ( mf);
+			this.obj.transform.rotation = Quaternion.identity;
 			this.obj.SetActive (active);
 		}
 	}

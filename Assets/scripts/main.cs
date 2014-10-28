@@ -6,6 +6,7 @@ using AssemblyCSharp;
 public class Main : MonoBehaviour {
 	private LeapParser controller;
 	private MouseParser mouseParser;
+	private KeyParser keyParser;
 	private Model position;
 	private Models  objects;
 	private int current = 0;
@@ -17,12 +18,15 @@ public class Main : MonoBehaviour {
 		def.SetActive(false);
 		controller = new LeapParser(objects);
 		mouseParser = new MouseParser(objects);
+		keyParser = new KeyParser(objects);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if(!controller.update ()){
-			mouseParser.update ();
+			if(!mouseParser.update ()){
+				keyParser.update();
+			}
 		}
 	}
 
