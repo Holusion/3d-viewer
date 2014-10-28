@@ -41,3 +41,4 @@ test_viewer/
 *.rar
 *.exe
 Assets/Resources/Objects/
+Assets/Resources/Objects.meta
