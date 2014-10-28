@@ -22,8 +22,12 @@ namespace AssemblyCSharp
 			UnityEngine.Object[] listObjects = Resources.LoadAll ("Objects", typeof(GameObject));
 			foreach (GameObject listObject in listObjects) {
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
-				scale (obj,def.collider);
-				list.Add (new Model(obj));
+				//scale (obj,def.collider);
+				Model model = new Model(obj);
+				//model.scale(def.collider);
+				//model.center();
+				model.setActive (false);
+				list.Add (model);
 			}
 			if( list.Count == 0){
 				Debug.Log ("no objects found. Please add objects to your Resources/Objects folder");
@@ -31,34 +35,8 @@ namespace AssemblyCSharp
 			}
 			this.setCurrent(0);
 		}
-		private Bounds GetMeshHierarchyBounds (GameObject go){
-			var bounds = new Bounds (); // Variable non utilisée, mais elle doit etre instanciée -- TODO A vérifier
-			if (go.renderer != null) {
-				bounds = go.renderer.bounds;
-				Debug.Log ("Found parent bounds: " + bounds);
-			}
-			foreach (var c in go.GetComponentsInChildren<MeshRenderer>()) {
-				if (bounds.size == Vector3.zero) {
-					bounds = c.bounds;
-				} else {
-					bounds.Encapsulate (c.bounds);
-				}
-			}
-			return bounds;
-		}
-		private Vector3 scale(GameObject obj,Collider root){
-			Vector3 currentScale = obj.transform.localScale;
-			Vector3 currentSize = GetMeshHierarchyBounds(obj).size;
-			Vector3 targetSize = (root.bounds.size);
-			Vector3 ratio = new Vector3(targetSize.x / currentSize.x, targetSize.y / currentSize.y, targetSize.z / currentSize.z);
-			float minRatio = Math.Min(ratio.x, Math.Min(ratio.y, ratio.z));
-			Vector3 newScale = (currentScale* minRatio);
-			if(obj.transform){
-				obj.transform.localScale = newScale;
-				
-			}
-			return newScale;
-		}
+
+
 		public Model getCurrent(){
 			return list[index];
 		}
@@ -67,6 +45,7 @@ namespace AssemblyCSharp
 			this.setCurrent(index+1);
 		}
 		public void setCurrent(int value){
+
 			if(value <list.Count && value >0){
 				this.index = value;
 			}else{
