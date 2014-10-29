@@ -7,9 +7,7 @@ public class Main : MonoBehaviour {
 	private LeapParser controller;
 	private MouseParser mouseParser;
 	private KeyParser keyParser;
-	private Model position;
 	private Models  objects;
-	private int current = 0;
 	// Use this for initialization
 	void Start () {
 		/* models init */
