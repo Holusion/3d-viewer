@@ -27,6 +27,13 @@ Assurez-vous de la bonne configuration des textures, bump map, etc...
 
 Référez vous à la [documentation](http://docs.unity3d.com/Manual/HOWTO-importObject.html) du moteur pour plus de détails à ce sujet.
 
+###Configuration
+
+Voir [documentation](blob/master/Doc/configuration.md) associée
+
+Etape optionnelle, permet de mieux adapter l'application à chaque modèle.
+
+
 ###Test
 
 Lancez de nouveau l'application avec ```ctrl+P```, vous pouvez vérifier le bon affichage de vos objets.

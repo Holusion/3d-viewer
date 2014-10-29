@@ -8,24 +8,35 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.IO;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using LitJson;
+
 namespace AssemblyCSharp
 {
 	public class Models{
 		private List<Model> list;
+		private JsonData config;
 		private int index;
 		public Models (GameObject def){
 			index = 0;
 			list = new List<Model>();
-			UnityEngine.Object[] listObjects = Resources.LoadAll ("Objects", typeof(GameObject));
+			string line;
+			//Get configuration nodes using litJSON
+			ConfNode[] config = JsonMapper.ToObject<ConfNode[]>(((TextAsset)Resources.Load("config", typeof(TextAsset))).text);
+
+			UnityEngine.Object[] listObjects = Resources.LoadAll("Objects", typeof(GameObject));
 			foreach (GameObject listObject in listObjects) {
+				Model model;
+				//Instantiate game object. Maybe we're just a step away to make this one visible, but I can't find it so just re create it...
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
-				//scale (obj,def.collider);
-				Model model = new Model(obj);
-				//model.scale(def.collider);
-				//model.center();
+
+				ConfNode node = Array.Find(config,element=>obj.name.Equals(element.name+"(Clone)",StringComparison.OrdinalIgnoreCase));
+				Debug.Log(obj.name);
+				Debug.Log(node);
+				model = new Model(obj,node);
 				model.setActive (false);
 				list.Add (model);
 			}

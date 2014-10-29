@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AssemblyCSharp
@@ -16,14 +17,34 @@ namespace AssemblyCSharp
 	public class Model{
 
 		private GameObject obj;
+		private ConfNode conf;
 		private Bounds bounds;
+		private List<GameObject> attachedComponents;
 		public Model (GameObject mesh){
+			conf = new ConfNode(mesh.name);
+			this.init (mesh);
+		}
+		public Model (GameObject mesh, ConfNode config){
+			if(config != null){
+				this.conf = config;
+			}
+			this.init (mesh);
+		}
+		public void init(GameObject mesh){
+			this.attachedComponents = new List<GameObject>();
 			this.obj =  mesh;
 			this.bounds = GetMeshHierarchyBounds(this.obj);
 			this.scale();
 			this.center ();
+			if(this.conf !=null && this.conf.objects !=null){
+				foreach(string name in this.conf.objects){
+					GameObject target = GameObject.Find(name);
+					if(target !=null){
+						this.attachedComponents.Add(target);
+					}
+				}
+			}
 		}
-
 		public void setRotation(float x,float y, float z){
 			this.setRotation(new Vector3(x,y,z));
 		}
@@ -45,6 +66,7 @@ namespace AssemblyCSharp
 			}
 			return newScale;
 		}
+
 		private Bounds GetMeshHierarchyBounds (GameObject go){
 			var bounds = new Bounds (); // Variable non utilisée, mais elle doit etre instanciée -- TODO A vérifier
 			if (go.renderer != null) {
@@ -67,11 +89,11 @@ namespace AssemblyCSharp
 		}
 
 		public void setActive(bool active){
-			//MeshFilter mf = (MeshFilter) this.obj.GetComponent<MeshFilter>();
-			//Debug.Log ( mf);
+			foreach(GameObject component in this.attachedComponents){
+				component.SetActive(active);
+			}
 			this.obj.transform.rotation = Quaternion.identity;
 			center ();
-			//scale ();
 			this.obj.SetActive (active);
 		}
 	}
