@@ -41,7 +41,7 @@ Cliquez sur **build**
 
 Enregistrez sous le nom souhaité
 
-Sélectionnez le fichier et le dossier ainsi créés et intégrez les à une archive au format *.zip* ou *.tar*. 
+Sélectionnez le fichier et le dossier ainsi créés et intégrez les à une archive au format *.zip* ou *.tar*.
 
 #Contrôles
 
