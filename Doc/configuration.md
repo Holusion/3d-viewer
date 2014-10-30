@@ -30,3 +30,19 @@ Cela permet par exemple d'éclairer plus fortement (en activant des lumières) d
 référence un *GameObject* de la hiérarchie comme appartenant à la "scène" du modèle. C'est à dire que l'objet référencé sera activé / désactivé en même temps que le dit modèle.
 
 **NB:** Un *GameObject* peut être référencé par plusieurs modèles.
+
+###axes
+
+**Optionnel** _\<tableau(2)>_
+
+Donne les autorisations de rotation sur les axes x et y pour l'objet.
+Permet aussi de régler la vitesse de rotation.
+
+```
+"axes":[1,0]
+  //Fera tourner l'objet uniquement autour d'un axe vertical
+"axes":[0,1]
+  //Fera tourner l'objet uniquement autour d'un axe hoizontal
+"axes":[0.1,0.1]
+  //Fera tourner l'objet sur les 2 axes, 10 fois plus lentement que la normale.
+```

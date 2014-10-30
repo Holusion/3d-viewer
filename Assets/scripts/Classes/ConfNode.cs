@@ -8,11 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections;
+using UnityEngine;
 namespace AssemblyCSharp
 {
 	public class ConfNode{
 		public string name	{ get; set; }
 		public string[] objects;
+		public float[] axes;
+
+
 		public ConfNode (){
 			defaults ();
 		}
@@ -22,6 +27,12 @@ namespace AssemblyCSharp
 		}
 		private void defaults(){
 			this.name="";
+			this.axes = new float[2];
+			this.axes[0]= 1f;
+			this.axes[1] = 1f;
+		}
+		public Vector3 getAxes(){
+			return new Vector3(this.axes[1],this.axes[0],0);
 		}
 	}
 }

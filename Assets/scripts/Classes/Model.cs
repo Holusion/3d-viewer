@@ -31,6 +31,9 @@ namespace AssemblyCSharp
 			this.init (mesh);
 		}
 		public void init(GameObject mesh){
+			if(this.conf ==null){
+				this.conf = new ConfNode(mesh.name);
+			}
 			this.attachedComponents = new List<GameObject>();
 			this.obj =  mesh;
 			this.bounds = GetMeshHierarchyBounds(this.obj);
@@ -49,7 +52,11 @@ namespace AssemblyCSharp
 			this.setRotation(new Vector3(x,y,z));
 		}
 		public void setRotation(Vector3 rot){
-			this.obj.transform.RotateAround(bounds.center,rot,100*Time.deltaTime);
+			Vector3 modifier = this.conf.getAxes();
+			rot.x = rot.x*modifier.x;
+			rot.y = rot.y*modifier.y;
+			rot.z = rot.z*modifier.z;
+			this.obj.transform.RotateAround(bounds.center,rot,rot.magnitude*100*Time.deltaTime);
 			//this.obj.transform.LookAt(Vector3.zero);
 			//this.obj.transform.Rotate(rot*Time.deltaTime);
 		}

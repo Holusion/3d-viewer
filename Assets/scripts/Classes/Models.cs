@@ -34,8 +34,6 @@ namespace AssemblyCSharp
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
 
 				ConfNode node = Array.Find(config,element=>obj.name.Equals(element.name+"(Clone)",StringComparison.OrdinalIgnoreCase));
-				Debug.Log(obj.name);
-				Debug.Log(node);
 				model = new Model(obj,node);
 				model.setActive (false);
 				list.Add (model);

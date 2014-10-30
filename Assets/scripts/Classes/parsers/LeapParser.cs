@@ -16,11 +16,18 @@ namespace AssemblyCSharp
 	public class LeapParser {
 		private Controller controller;
 		private Models models;
+		private float switchCount;
+		private float switchTimer;
+		private float switchLast;
 		public LeapParser (Models models){
 			this.models = models;
 			controller = new Controller();
 			//Enabling gestures
-			controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
+			//controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
+			switchCount = 0f;
+			switchTimer = 0f;
+			switchLast = 0f;
+
 		}
 		/**
 		 * return true if leap is available and parsing suceed. False otherwise.
@@ -39,12 +46,95 @@ namespace AssemblyCSharp
 			//FingerList fingers = frame.Fingers;
 			//ToolList tools = frame.Tools;
 			Hand hand = frame.Hands.Frontmost;
-			Vector normal = hand.PalmNormal;
-			Vector origin = hand.PalmPosition;
+			change (hand);
+			return rotation(hand);
 
 
-			return true;
 		}
+		private bool change(Hand hand){
+			//Don't switch if we switched less than X seconds ago
+			if(switchTimer<1){
+				switchTimer+= Time.deltaTime;
+				return false;
+			}
+
+			if(hand.GrabStrength >=0.9f){
+				//We are switching
+				switchCount+=Time.deltaTime;
+				Debug.Log(switchCount);
+				if(switchCount>=0.5f){
+					models.next();
+					switchTimer=0f;
+					switchCount=0f;
+					return true;
+				}
+			}else if(switchCount>0f){
+				switchCount-=Time.deltaTime;
+			}
+			return false;
+		}
+		private bool rotation(Hand hand){
+			Model model = models.getCurrent();
+			Vector normal = hand.PalmNormal;
+			Vector origin = hand.StabilizedPalmPosition;
+			Vector3 rot = new Vector3(0,0,0);
+			//Correcting normal Z which is naturally a bit negative (+20%)
+			if(normal.z <0.6f){normal.z +=0.2f;}
+			if(normal.z>=0.6f){normal.z+=0.2f*(1-(normal.z-0.6f)*2.5f);}
+			float deadZone = 0.2f;
+			//Trimmed value (=0 on deadZone boundaries)
+			float nX = trim (normal.x,deadZone);
+			float nZ = -trim (normal.z,deadZone);
+			//Absolute trimmed values
+			float nXa = Math.Abs(nX);
+			float nZa = Math.Abs(nZ);
+			//Signs
+			float nXSign = Math.Sign(normal.x);
+			float nZSign = -Math.Sign(normal.z);
+			
+			//origin values
+			//Corrections : normalize origin.
+			//origin.y =0;
+			origin = origin.Normalized;
+			float oX = -trim(origin.x,deadZone);
+			float oZ = trim(origin.z,deadZone);
+			
+			float oXa = Math.Abs(oX);
+			float oZa = Math.Abs(oZ);
+			//Signs
+			float oXSign = -Math.Sign(origin.x);
+			float oZSign = Math.Sign(origin.z);
+			
+			if(nXSign == oXSign ){
+				if( nXa > nZa*1.5){
+					rot.y += nX;
+				}else if(oXa >oZa*1.5){
+					rot.y += oX;
+				}
+			}else {
+				if( nZa > nXa*1.5 ){
+					rot.x += nZ;
+				}else if ( oZa >oXa*1.5 ){
+					rot.x += oZ;
+				}
+			}
+			
+			rot = rot*2; //Scale up to match with keyboard control sensibility.
+			model.setRotation(rot);
+			if(!rot.Equals(Vector3.zero)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		private float trim(float val,float trim){
+			if(Math.Abs(val)>=Math.Abs(trim)){
+				return Math.Sign(val) * ( Math.Abs(val)-Math.Abs(trim) );
+			}else{
+				return 0f;
+			}
+		}
+
 	}
 }
 
