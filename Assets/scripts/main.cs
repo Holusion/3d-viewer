@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using AssemblyCSharp;
 
 public class Main : MonoBehaviour {
-	private LeapParser controller;
+	private LeapParser3 controller;
 	private MouseParser mouseParser;
 	private KeyParser keyParser;
 	private Models  objects;
@@ -14,7 +14,7 @@ public class Main : MonoBehaviour {
 		GameObject def = GameObject.FindWithTag("default");
 		objects = new Models(def);
 		def.SetActive(false);
-		controller = new LeapParser(objects);
+		controller = new LeapParser3(objects);
 		mouseParser = new MouseParser(objects);
 		keyParser = new KeyParser(objects);
 	}

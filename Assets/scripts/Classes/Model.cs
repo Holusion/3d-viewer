@@ -48,11 +48,17 @@ namespace AssemblyCSharp
 				}
 			}
 		}
+
+		public Quaternion getRotation (){
+			return this.obj.transform.rotation;
+		}
+
 		public void setRotation(float x,float y, float z){
 			this.setRotation(new Vector3(x,y,z));
 		}
 		public void setRotation(Vector3 rot){
 			Vector3 modifier = this.conf.getAxes();
+			//Debug.Log(modifier);
 			rot.x = rot.x*modifier.x;
 			rot.y = rot.y*modifier.y;
 			rot.z = rot.z*modifier.z;

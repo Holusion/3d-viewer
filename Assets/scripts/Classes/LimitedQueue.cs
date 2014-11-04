@@ -8,32 +8,32 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-using System.Collections;
-using UnityEngine;
+using System.Collections.Generic;
 namespace AssemblyCSharp
 {
-	public class ConfNode{
-		public string name	{ get; set; }
-		public string[] objects;
-		public float[] axes;
-
-
-		public ConfNode (){
-			defaults ();
+	public class LimitedQueue<T> : Queue<T>
+	{
+		private int limit = -1;
+		
+		public int Limit
+		{
+			get { return limit; }
+			set { limit = value; }
 		}
-		public ConfNode (string name){
-			defaults ();
-			this.name=name;
+		
+		public LimitedQueue(int limit)
+			: base(limit)
+		{
+			this.Limit = limit;
 		}
-		private void defaults(){
-			this.name="";
-			this.axes = new float[3];
-			this.axes[0]= 1f;
-			this.axes[1] = 1f;
-			this.axes[2] = 1f;
-		}
-		public Vector3 getAxes(){
-			return new Vector3(this.axes[1],this.axes[0],this.axes[2]);
+		
+		public new void Enqueue(T item)
+		{
+			if (this.Count >= this.Limit)
+			{
+				this.Dequeue();
+			}
+			base.Enqueue(item);
 		}
 	}
 }
