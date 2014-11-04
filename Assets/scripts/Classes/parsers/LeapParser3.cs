@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Leap;
 using UnityEngine;
 namespace AssemblyCSharp
@@ -17,6 +18,7 @@ namespace AssemblyCSharp
 		private Controller controller;
 		private Models models;
 		private Vector3 rot;
+		private LimitedQueue<int> swipes;
 		private Smoother smoother;
 		private Frame previousFrame;
 		private float timer;
@@ -24,16 +26,17 @@ namespace AssemblyCSharp
 
 		//private Vector previousPos;
 		public LeapParser3 (Models models){
+			swipes = new LimitedQueue<int>(5);
 			smoother = new Smoother();
 			this.models = models;
 			rot = new Vector3(0,0,0);
 			timer = 0f;
 			controller = new Controller();
-
-			controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
-			//Enabling gestures
-			//controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
-			
+			// CONFIGURE LEAP ////////////////////
+			controller.EnableGesture(Gesture.GestureType.TYPESWIPE);
+			controller.Config.SetFloat("Gesture.Swipe.MinLength",150f); //DEFAULT 150f in mm
+			controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 500f); //DEFAULT 1000f in mm/s
+			controller.Config.Save();
 		}
 		/**
 		 * return true if leap is available and parsing suceed. False otherwise.
@@ -50,57 +53,74 @@ namespace AssemblyCSharp
 			}
 			frame = controller.Frame();
 
-			swipe (frame);
+
 			bool ret = rotation(frame);
+			if( !ret ){
+				ret = swipe (frame);
+			}
 			//previousFrame = frame;
 			return ret;
 		}
 
 
 		private bool swipe(Frame frame){
+			bool ret = false;
 			GestureList gestures;
 
 			if(timer>=0f){
 				timer -= Time.deltaTime;
-				return false;
+				ret = true; //We switched recently
 			}else{
-				gestures = frame.Gestures();
+
+				if(previousFrame != null && previousFrame.IsValid){
+					gestures = frame.Gestures(previousFrame);
+				}else{
+					gestures = frame.Gestures();
+				}
 				foreach (Gesture gesture in gestures){
 					Debug.Log("gesture");
-					if(gesture.Duration >=200000 && timer<=0f){
-						timer =1.5f;
-						models.next();
-						return true;
+					Debug.Log(gesture.Id);
+					Debug.Log(gesture.State);
+					if(Array.Find((int[])swipes.ToArray(),id=> id == gesture.Id) != gesture.Id && timer <0f){ //Check each time if timer is >0
+						swipes.Enqueue(gesture.Id);
+						SwipeGesture sw = new SwipeGesture(gesture);
+						if(Math.Abs(sw.Direction.x) > Math.Abs(sw.Direction.y)*2f ){
+							timer =2f;
+							models.next();
+							ret = true; //We are switching
+						}
+					}else if(gesture.State == Gesture.GestureState.STATESTOP){
+						//Gesture was already counted
+						timer = 0.5f;
+
 					}
 				}
 			}
 
-			return false;
+			return ret;
 		}
 
 		private bool rotation(Frame frame){
+			bool ret = false;
 			Hand hand = frame.Hands.Frontmost;
 			Model model = models.getCurrent();
 			Vector velocity; //= hand.PalmVelocity;
 			//We have at least progressed 1 frame
-			if (hand.PinchStrength>=1f || hand.GrabStrength>=1f){
+			if (hand.PinchStrength>=1f ||(hand.PinchStrength>0.8f && hand.GrabStrength == 1f)){
 				smoother.Push(getRotation(hand));
-			}else if(hand.PinchStrength >0.8f){
+				ret = true;
+			}else if(hand.PinchStrength >0.95f){
 				//Might be a pinch ... or not. So just minimize effect.
-				smoother.Push(getRotation(hand),0.2f);
+				smoother.Push(getRotation(hand),0.25f);
+				ret = true;
 			}else{
-				smoother.Push(Vector3.zero,0.15f);
+				smoother.Push(Vector3.zero,0.25f);
 			}
 			//Debug.Log(smoother.Movement);
 			model.setRotation(smoother.Movement*Time.deltaTime);
 			
 			
-			
-			if(!smoother.Movement.Equals(Vector3.zero)){
-				return true;
-			}else{
-				return false;
-			}
+			return ret;
 		}		
 		private Vector3 getRotation(Hand hand){
 			Vector3 ret;

@@ -11,6 +11,7 @@ public class Main : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		/* models init */
+		Screen.showCursor = false;
 		GameObject def = GameObject.FindWithTag("default");
 		objects = new Models(def);
 		def.SetActive(false);
