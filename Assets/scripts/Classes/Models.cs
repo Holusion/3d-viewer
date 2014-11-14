@@ -8,29 +8,39 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
-using System.IO;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using LitJson;
-
+using AssemblyCSharp.Configure; 
 namespace AssemblyCSharp
 {
 	public class Models{
 		//Private members
 		private List<Model> list;
 		private int index;
-
 		//Alternative constructor, equivalent to calling new Models(null) or with invalid master object. It'll just make an empty scene if no valid object is found;
 		public Models(){
+			loadScene (null, new ConfigReader());
+		}
+
+		public Models(ConfigReader config){
+			loadScene (null,config);
+		}
+
+		public Models (GameObject defaultObject){
+			loadScene (defaultObject, new ConfigReader());
+		}
+		public Models(GameObject defaultObject, ConfigReader config){
+			loadScene (defaultObject, config);
+		}
+		public void loadScene(GameObject defaultObject, ConfigReader config){
 			index = 0;
 			UnityEngine.Object[] listObjects;
-			ConfNode[] config;
-
+			
 			//Instantiate list
 			list = new List<Model>();			
 			//Get configuration nodes using litJSON
-			config = getConfig();
+			
 			
 			listObjects = Resources.LoadAll("Objects", typeof(GameObject));
 			
@@ -39,24 +49,18 @@ namespace AssemblyCSharp
 				//Instantiate game object. Maybe we're just a step away to make this one visible, but I can't find it so just re create it...
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
 				
-				ConfNode node = Array.Find(config,element=>obj.name.Equals(element.name+"(Clone)",StringComparison.OrdinalIgnoreCase));
+				ConfNode node = Array.Find(config.Nodes,element=>obj.name.Equals(element.name+"(Clone)",StringComparison.OrdinalIgnoreCase));
 				model = new Model(obj,node);
 				model.setActive (false);
 				list.Add (model);
 			}
 			if(list.Count>0){
 				this.setCurrent(0);
-			}
-		}
-
-		public Models (GameObject defaultObject):this(){
-			if( list.Count == 0 && defaultObject){
+			}else if(defaultObject != null){
 				list.Add (new Model((GameObject) GameObject.Instantiate (defaultObject, Vector3.zero, Quaternion.identity)));
 				this.setCurrent(0);
 			}
-
 		}
-
 
 		public Model getCurrent(){
 			return list[index];
@@ -73,10 +77,6 @@ namespace AssemblyCSharp
 				this.index = 0;
 			}
 			this.list[index].setActive(true);
-		}
-
-		private ConfNode[] getConfig(){
-			return JsonMapper.ToObject<ConfNode[]>(((TextAsset)Resources.Load("config", typeof(TextAsset))).text);
 		}
 
 	}

@@ -68,7 +68,7 @@ namespace AssemblyCSharp
 			return ret;
 		}
 		private bool rotation(Hand hand){
-			float x = 0, y=0,z=0;
+			float z=0;
 			Model model = models.getCurrent();
 			Vector velocity = hand.PalmVelocity;
 			//Don't play with recently detected hand!

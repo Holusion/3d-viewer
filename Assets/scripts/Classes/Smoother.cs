@@ -13,7 +13,6 @@ namespace AssemblyCSharp
 {
 	public class Smoother {
 		private LimitedQueue<Vector3> movement;
-		private float smoothCoef;
 		public Smoother (){
 			init (500);
 		}
@@ -24,7 +23,6 @@ namespace AssemblyCSharp
 			movement = new LimitedQueue<Vector3>(25);
 			movement.Enqueue(Vector3.zero);
 			movement.Enqueue(Vector3.zero);
-			smoothCoef = coef;
 		}
 		public Vector3 Movement {
 			get {

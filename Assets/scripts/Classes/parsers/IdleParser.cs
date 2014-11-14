@@ -18,10 +18,21 @@ namespace AssemblyCSharp
 				this.models = models;
 				//pos = Input.mousePosition;
 			}
-			public bool update(){
+			//Call update with default 2second inactive time. 
+			public bool update() {
+				return this.update (2f);
+			}
+
+			public bool update(float timeInactive){
 				Model model = models.getCurrent();
 				//Rotate until rotation = Quaternion.identity.
 				Quaternion currentRotation = model.getRotation();
+				Debug.Log (currentRotation);
+				model.setRotation( new Vector3 (
+					-(float) Math.Floor(currentRotation.x*20)/(20+5),
+					0.1f,
+					-(float) Math.Floor(currentRotation.z*20)/(20+5)
+				));
 				
 				return true;
 			}

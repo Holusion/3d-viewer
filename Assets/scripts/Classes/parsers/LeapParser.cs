@@ -18,7 +18,6 @@ namespace AssemblyCSharp
 		private Models models;
 		private float switchCount;
 		private float switchTimer;
-		private float switchLast;
 		public LeapParser (Models models){
 			this.models = models;
 			controller = new Controller();
@@ -26,7 +25,6 @@ namespace AssemblyCSharp
 			//controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
 			switchCount = 0f;
 			switchTimer = 0f;
-			switchLast = 0f;
 
 		}
 		/**
@@ -90,7 +88,6 @@ namespace AssemblyCSharp
 			float nZa = Math.Abs(nZ);
 			//Signs
 			float nXSign = Math.Sign(normal.x);
-			float nZSign = -Math.Sign(normal.z);
 			
 			//origin values
 			//Corrections : normalize origin.
@@ -103,7 +100,6 @@ namespace AssemblyCSharp
 			float oZa = Math.Abs(oZ);
 			//Signs
 			float oXSign = -Math.Sign(origin.x);
-			float oZSign = Math.Sign(origin.z);
 			
 			if(nXSign == oXSign ){
 				if( nXa > nZa*1.5){

@@ -17,7 +17,6 @@ namespace AssemblyCSharp
 	public class LeapParser3 {
 		private Controller controller;
 		private Models models;
-		private Vector3 rot;
 		private LimitedQueue<int> swipes;
 		private Smoother smoother;
 		private Frame previousFrame;
@@ -29,7 +28,6 @@ namespace AssemblyCSharp
 			swipes = new LimitedQueue<int>(5);
 			smoother = new Smoother();
 			this.models = models;
-			rot = new Vector3(0,0,0);
 			timer = 0f;
 			controller = new Controller();
 			// CONFIGURE LEAP ////////////////////
@@ -44,7 +42,6 @@ namespace AssemblyCSharp
 		 * */
 		public bool update (){
 			Frame frame;
-			GestureList gestures;
 			if(!controller.IsServiceConnected()){
 				return false;
 			}
@@ -104,7 +101,6 @@ namespace AssemblyCSharp
 			bool ret = false;
 			Hand hand = frame.Hands.Frontmost;
 			Model model = models.getCurrent();
-			Vector velocity; //= hand.PalmVelocity;
 			//We have at least progressed 1 frame
 			if (hand.PinchStrength>=1f ||(hand.PinchStrength>0.8f && hand.GrabStrength == 1f)){
 				smoother.Push(getRotation(hand));

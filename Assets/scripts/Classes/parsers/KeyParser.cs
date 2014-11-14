@@ -20,29 +20,35 @@ namespace AssemblyCSharp
 		}
 		public bool update(){
 			Model model = models.getCurrent();
+			bool ret = false;
 			//Horizontal rotation
 			if(Input.GetKey("q")){
+				ret= true;
 				model.setRotation(0,1,0);
 			}else if(Input.GetKey("d")){
+				ret= true;
 				model.setRotation(0,-1,0);
 			}
 			//roll
 			if(Input.GetKey("a")){
+				ret= true;
 				model.setRotation(0,0,1);
 			}else if(Input.GetKey("e")){
+				ret= true;
 				model.setRotation(0,0,-1);
 			}
 			//vertical rotation
 			if(Input.GetKey("z")){
+				ret= true;
 				model.setRotation(1,0,0);
 			}else if(Input.GetKey("s")){
+				ret= true;
 				model.setRotation(-1,0,0);
-			}
-			//Switch
-			if(Input.GetKeyDown("r")){
+			}else if(Input.GetKeyDown("r")){
+				ret= true;
 				models.next();
 			}
-			return true;
+			return ret;
 		}
 	}
 }

@@ -11,7 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using AssemblyCSharp.Configure; 
 namespace AssemblyCSharp
 {
 	public class Model{
