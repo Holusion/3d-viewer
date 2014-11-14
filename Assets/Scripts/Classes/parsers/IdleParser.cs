@@ -24,15 +24,13 @@ namespace AssemblyCSharp
 			}
 
 			public bool update(float timeInactive){
+				Vector3 rot;
 				Model model = models.getCurrent();
 				//Rotate until rotation = Quaternion.identity.
 				Quaternion currentRotation = model.getRotation();
-			Debug.Log (currentRotation);
-				model.setRotation( new Vector3 (
-					0,
-					0.4f,
-					0
-				));
+				rot =  Vector3.zero;
+				rot.y = 0.2f;
+				model.setRotation(rot);
 				
 				return true;
 			}
