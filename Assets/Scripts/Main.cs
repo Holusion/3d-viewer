@@ -46,9 +46,9 @@ public class Main : MonoBehaviour {
 			idleParser.update(timeInactive);
 		}
 
-		if (this.options.switchAfter > 0 && timeInactive > this.options.switchAfter) {
+		if (this.options.switchAfter > 0 && timeInactive > this.options.switchAfter+this.options.autoRotation) {
 			this.objects.next();
-			timeInactive =0f;
+			timeInactive =this.options.autoRotation;
 		}
 
 		if (this.options.exitAfter > 0 && timeInactive > this.options.exitAfter) {

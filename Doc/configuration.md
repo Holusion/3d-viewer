@@ -47,15 +47,38 @@ Cela permet par exemple d'éclairer plus fortement (en activant des lumières) d
 
 rotation automatique après *x* secondes d'inactivité. si inferieur ou égal à 0, désactive l'option.
 
+###switchAfter
+
+**Optionnel** _\<int>_ Defaut : 0
+
+
+Change de modèle après *x* secondes d'inactivité.
+
+- **TIP** : Ne commence à compter qu'après le délai [d'auto rotation](#autorotation). Par exemple :
+
+    "autoRotation" : 2
+    "switchAfter" : 5
+Résultera en :
+
+- *t+0* : dernière interaction
+- *t+2* : début de l'auto-rotation
+- *t+7* : changement de modèle (autorotation immediate)
+- *t+12* : nouveau changement de modèle
+
+Si ce comportement pose problème il est facilement changeable en éditant le fichier [Assets/Scripts/Main.cs](Assets/Scripts/Main.cs#L49)
 
 
 ###exitAfter
 
 **Optionnel** _\<int>_ Defaut : 0
 
+**Ne fonctionne pas correctement avec les exports linux!**
+
 Quitte l'application après *x* secondes d'inactivité.
 
 **TIP** : L'option ne fonctionne pas en mode débug dans l'éditeur.
+
+
 
 ##Node Options
 
