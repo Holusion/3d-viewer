@@ -47,6 +47,9 @@ namespace AssemblyCSharp.Configure
 					Debug.LogWarning(e.ToString());
 					this.conf = new ConfFile();
 				}
+			}else{
+				Debug.Log("no config file found");
+				this.conf = new ConfFile();
 			}
 
 		}
