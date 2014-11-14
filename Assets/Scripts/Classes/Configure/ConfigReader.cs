@@ -40,11 +40,13 @@ namespace AssemblyCSharp.Configure
 		}
 		public void getConfig(){
 			TextAsset text = (TextAsset)Resources.Load (this.fileName, typeof(TextAsset));
-			try{
-				this.conf = JsonMapper.ToObject<ConfFile> (text.text);
-			} catch(JsonException e){
-				Debug.LogWarning(e.ToString());
-				this.conf = new ConfFile();
+			if(text != null && text.text != null){
+				try{
+					this.conf = JsonMapper.ToObject<ConfFile> (text.text);
+				} catch(JsonException e){
+					Debug.LogWarning(e.ToString());
+					this.conf = new ConfFile();
+				}
 			}
 
 		}

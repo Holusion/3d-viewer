@@ -46,7 +46,8 @@ public class Main : MonoBehaviour {
 			idleParser.update(timeInactive);
 		}
 		if (this.options.exitAfter > 0 && timeInactive > this.options.exitAfter) {
-			Application.Quit();
+			//Application.Quit(); //Does not work : bug in unity
+			System.Diagnostics.Process.GetCurrentProcess().Kill();
 		}
 	}
 }
