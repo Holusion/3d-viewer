@@ -17,32 +17,44 @@ using LitJson;
 namespace AssemblyCSharp
 {
 	public class Models{
+		//Private members
 		private List<Model> list;
-		private JsonData config;
 		private int index;
-		public Models (GameObject def){
-			index = 0;
-			list = new List<Model>();
-			string line;
-			//Get configuration nodes using litJSON
-			ConfNode[] config = JsonMapper.ToObject<ConfNode[]>(((TextAsset)Resources.Load("config", typeof(TextAsset))).text);
 
-			UnityEngine.Object[] listObjects = Resources.LoadAll("Objects", typeof(GameObject));
+		//Alternative constructor, equivalent to calling new Models(null) or with invalid master object. It'll just make an empty scene if no valid object is found;
+		public Models(){
+			index = 0;
+			UnityEngine.Object[] listObjects;
+			ConfNode[] config;
+
+			//Instantiate list
+			list = new List<Model>();			
+			//Get configuration nodes using litJSON
+			config = getConfig();
+			
+			listObjects = Resources.LoadAll("Objects", typeof(GameObject));
+			
 			foreach (GameObject listObject in listObjects) {
 				Model model;
 				//Instantiate game object. Maybe we're just a step away to make this one visible, but I can't find it so just re create it...
 				GameObject obj = (GameObject) GameObject.Instantiate (listObject, Vector3.zero, Quaternion.identity);
-
+				
 				ConfNode node = Array.Find(config,element=>obj.name.Equals(element.name+"(Clone)",StringComparison.OrdinalIgnoreCase));
 				model = new Model(obj,node);
 				model.setActive (false);
 				list.Add (model);
 			}
-			if( list.Count == 0){
-				Debug.Log ("no objects found. Please add objects to your Resources/Objects folder");
-				list.Add (new Model((GameObject) GameObject.Instantiate (def, Vector3.zero, Quaternion.identity)));
+			if(list.Count>0){
+				this.setCurrent(0);
 			}
-			this.setCurrent(0);
+		}
+
+		public Models (GameObject defaultObject):this(){
+			if( list.Count == 0 && defaultObject){
+				list.Add (new Model((GameObject) GameObject.Instantiate (defaultObject, Vector3.zero, Quaternion.identity)));
+				this.setCurrent(0);
+			}
+
 		}
 
 
@@ -61,6 +73,10 @@ namespace AssemblyCSharp
 				this.index = 0;
 			}
 			this.list[index].setActive(true);
+		}
+
+		private ConfNode[] getConfig(){
+			return JsonMapper.ToObject<ConfNode[]>(((TextAsset)Resources.Load("config", typeof(TextAsset))).text);
 		}
 
 	}
