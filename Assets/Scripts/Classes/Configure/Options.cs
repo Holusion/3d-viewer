@@ -13,9 +13,11 @@ namespace AssemblyCSharp.Configure
 	public class Options{
 		public float autoRotation;
 		public float exitAfter;
+		public float switchAfter;
 		public Options (){
 			autoRotation = 0;
 			exitAfter = 0;
+			switchAfter = 0;
 		}
 	}
 }

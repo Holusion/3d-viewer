@@ -27,10 +27,9 @@ namespace AssemblyCSharp
 				Model model = models.getCurrent();
 				//Rotate until rotation = Quaternion.identity.
 				Quaternion currentRotation = model.getRotation();
-				Debug.Log (currentRotation);
 				model.setRotation( new Vector3 (
 					-(float) Math.Floor(currentRotation.x*20)/(20+5),
-					0.1f,
+					0.4f,
 					-(float) Math.Floor(currentRotation.z*20)/(20+5)
 				));
 				
