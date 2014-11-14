@@ -33,6 +33,7 @@ Voir [documentation](Doc/configuration.md) associée
 
 Etape optionnelle, permet de mieux adapter l'application à chaque modèle.
 
+Les options par défaut conviendront généralement pour une première prise en main.
 
 ###Test
 
