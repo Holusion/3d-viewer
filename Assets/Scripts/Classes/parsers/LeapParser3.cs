@@ -14,7 +14,7 @@ using Leap;
 using UnityEngine;
 namespace AssemblyCSharp
 {
-	public class LeapParser3 {
+	public class LeapParser3:BaseParser {
 		private Controller controller;
 		private Models models;
 		private LimitedQueue<int> swipes;
@@ -40,7 +40,7 @@ namespace AssemblyCSharp
 		 * return true if leap is available and parsing suceed. False otherwise.
 		 * Simply a	replacement, instead of using onFrame, thus syncing with app's pace, if called in update() method.
 		 * */
-		public bool update (){
+		public override bool update() {
 			Frame frame;
 			if(!controller.IsServiceConnected()){
 				return false;

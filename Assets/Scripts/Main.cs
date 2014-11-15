@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using AssemblyCSharp;
 using AssemblyCSharp.Configure; 
 public class Main : MonoBehaviour {
-	private LeapParser3 controller;
-	private MouseParser mouseParser;
-	private KeyParser keyParser;
-	private IdleParser idleParser;
+	private List<BaseParser> parsers;
 	private Models  objects;
 	private float timeInactive;
 	private Options options;
+	private IdleParser idleParser;
 	// Use this for initialization
 	void Start () {
 		/* models init */
@@ -20,22 +18,27 @@ public class Main : MonoBehaviour {
 		ConfigReader reader = new ConfigReader ();
 		objects = new Models(def,reader);
 		def.SetActive(false);
-
+		parsers = new List<BaseParser>();
 		//Interaction parsers ////////////////
-		controller = new LeapParser3(objects);
-		mouseParser = new MouseParser(objects);
-		keyParser = new KeyParser(objects);
-		idleParser = new IdleParser (objects);
+		parsers.Add(new LeapParser3(objects));
+		parsers.Add(new MouseParser(objects));
+		parsers.Add(new KeyParser(objects));
 
+		idleParser = new IdleParser(objects);
 		this.options = reader.Options;
 		timeInactive = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if(controller.update () ==true
-		|| mouseParser.update () ==true
-		|| keyParser.update() == true){
+		bool isUpdated = false;
+		foreach (BaseParser parser in parsers){
+			if(parser.update()){
+				isUpdated = true;
+				break;
+			}
+		}
+		if(isUpdated == true){
 			timeInactive = 0;
 		}else{
 			timeInactive +=Time.deltaTime ;

@@ -11,7 +11,7 @@ using System;
 using UnityEngine;
 namespace AssemblyCSharp
 {
-		public class IdleParser {
+		public class IdleParser:BaseParser {
 			
 			private Models models;
 			public IdleParser (Models models){
@@ -19,7 +19,7 @@ namespace AssemblyCSharp
 				//pos = Input.mousePosition;
 			}
 			//Call update with default 2second inactive time. 
-			public bool update() {
+			public override bool update() {
 				return this.update (2f);
 			}
 
@@ -27,12 +27,31 @@ namespace AssemblyCSharp
 				Vector3 rot;
 				Model model = models.getCurrent();
 				//Rotate until rotation = Quaternion.identity.
-				Quaternion currentRotation = model.getRotation();
-				rot =  Vector3.zero;
-				rot.y = 0.2f;
+				
+				rot =  getDesiredRotationSpeed(model);
 				model.setRotation(rot);
 				
 				return true;
+			}
+
+
+			private Vector3 getDesiredRotationSpeed (Model model){
+				Vector3 currentAngle = model.getRotation();
+				Vector3 newRot = new Vector3(parseAngle(currentAngle.x),0.2f,parseAngle(currentAngle.z));
+
+				return newRot;
+
+				
+			}
+			private float parseAngle(float baseAngle){
+				float res;
+				if(baseAngle <4 ||baseAngle>356){
+					return 0;
+				}else if(baseAngle <180){
+					return -baseAngle*(1-(float)Math.Exp(-baseAngle))*0.02f;	
+				}else{
+					return (360-baseAngle)*(1-(float)Math.Exp(-(360-baseAngle)))*0.02f;	
+				}
 			}
 		}
 }

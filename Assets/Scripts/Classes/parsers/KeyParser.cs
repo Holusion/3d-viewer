@@ -11,14 +11,14 @@ using System;
 using UnityEngine;
 namespace AssemblyCSharp
 {
-	public class KeyParser {
+	public class KeyParser:BaseParser {
 
 		private Models models;
 		public KeyParser (Models models){
 			this.models = models;
 			//pos = Input.mousePosition;
 		}
-		public bool update(){
+		public override bool update() {
 			Model model = models.getCurrent();
 			bool ret = false;
 			//Horizontal rotation

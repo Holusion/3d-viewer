@@ -12,14 +12,14 @@ using UnityEngine;
 
 namespace AssemblyCSharp
 {
-	public class MouseParser {
+	public class MouseParser:BaseParser {
 		private Vector3 pos;
 		private Models models;
 		public MouseParser (Models models){
 			this.models = models;
 			pos = Input.mousePosition;
 		}
-		public bool update(){
+		public override bool update() {
 			bool isActive =false;
 			Model model = models.getCurrent();
 			if(Input.GetMouseButton(0)){

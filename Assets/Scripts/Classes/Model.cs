@@ -49,8 +49,8 @@ namespace AssemblyCSharp
 			}
 		}
 
-		public Quaternion getRotation (){
-			return this.obj.transform.rotation;
+		public Vector3 getRotation (){
+			return this.obj.transform.eulerAngles;
 		}
 
 		public void setRotation(float x,float y, float z){

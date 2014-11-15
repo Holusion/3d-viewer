@@ -13,7 +13,7 @@ using Leap;
 using UnityEngine;
 namespace AssemblyCSharp
 {
-	public class LeapParser {
+	public class LeapParser:BaseParser {
 		private Controller controller;
 		private Models models;
 		private float switchCount;
@@ -31,7 +31,7 @@ namespace AssemblyCSharp
 		 * return true if leap is available and parsing suceed. False otherwise.
 		 * Simply a	replacement, instead of using onFrame, thus syncing with app's pace, if called in update() method.
 		 * */
-		public bool update (){
+		public override bool update() {
 			if(!controller.IsServiceConnected()){
 				return false;
 			}
