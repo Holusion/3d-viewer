@@ -59,5 +59,3 @@ Sélectionnez le fichier et le dossier ainsi créés et intégrez les à une arc
 ##TODO
 
  * ne pas planter si leap motion non installé
-
- 

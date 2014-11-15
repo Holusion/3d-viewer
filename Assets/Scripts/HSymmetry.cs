@@ -3,10 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (Camera))]
 public class HSymmetry : MonoBehaviour {
-	void Start (){
-		Debug.Log(name);
-		Debug.Log(camera.aspect);
-	}
+
 	void OnPreCull () {
 		Matrix4x4 scale;
 		if(camera.aspect >2){
