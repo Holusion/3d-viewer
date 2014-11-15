@@ -3,10 +3,17 @@ using System.Collections;
 
 [RequireComponent (typeof (Camera))]
 public class HSymmetry : MonoBehaviour {
-
+	void Start (){
+		Debug.Log(name);
+		Debug.Log(camera.aspect);
+	}
 	void OnPreCull () {
-		Matrix4x4 scale = Matrix4x4.Scale (new Vector3 (-1, 1, 1));
-
+		Matrix4x4 scale;
+		if(camera.aspect >2){
+			scale = Matrix4x4.Scale (new Vector3 (-1, 1, 1));
+		}else{
+			 scale = Matrix4x4.Scale (new Vector3 (1, -1, 1));
+		}
 		camera.ResetWorldToCameraMatrix ();
 		camera.ResetProjectionMatrix ();
 		camera.projectionMatrix = camera.projectionMatrix * scale;
