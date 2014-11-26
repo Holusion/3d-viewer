@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Leap;
 using UnityEngine;
+using AssemblyCSharp.Utils;
 namespace AssemblyCSharp
 {
 	public class LeapParser3:BaseParser {

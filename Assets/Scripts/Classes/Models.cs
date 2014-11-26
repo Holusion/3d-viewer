@@ -12,6 +12,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp.Configure; 
+using AssemblyCSharp.Utils;
 namespace AssemblyCSharp
 {
 	public class Models{
@@ -42,7 +43,7 @@ namespace AssemblyCSharp
 			//Get configuration nodes using litJSON
 			
 			
-			listObjects = Resources.LoadAll("Objects", typeof(GameObject));
+			listObjects = FileLoader.getObjects();
 			
 			foreach (GameObject listObject in listObjects) {
 				Model model;

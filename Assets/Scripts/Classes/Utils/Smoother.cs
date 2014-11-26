@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 using System;
 using UnityEngine;
-namespace AssemblyCSharp
+namespace AssemblyCSharp.Utils
 {
 	public class Smoother {
 		private LimitedQueue<Vector3> movement;

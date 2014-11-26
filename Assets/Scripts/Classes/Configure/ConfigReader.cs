@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using LitJson;
+using AssemblyCSharp.Utils;
 
 namespace AssemblyCSharp.Configure
 {
@@ -39,7 +40,7 @@ namespace AssemblyCSharp.Configure
 			this.getConfig ();
 		}
 		public void getConfig(){
-			TextAsset text = (TextAsset)Resources.Load (this.fileName, typeof(TextAsset));
+			TextAsset text = (TextAsset)FileLoader.getConfig(this.fileName);
 			if(text != null && text.text != null){
 				try{
 					this.conf = JsonMapper.ToObject<ConfFile> (text.text);
