@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 using System;
 using System.IO;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using LitJson;
@@ -20,7 +19,7 @@ namespace AssemblyCSharp.Configure
 	public class ConfigReader{
 		private string fileName;
 		private ConfFile conf;
-
+		private IConfFileLoader loader;
 		public ConfNode[] Nodes {
 			get{
 				return conf.nodes;
@@ -33,23 +32,30 @@ namespace AssemblyCSharp.Configure
 		}
 		public ConfigReader (string fileName){
 			this.fileName = fileName;
+			this.loader = new FileLoader();
 			this.getConfig ();
 		}
 		public ConfigReader (){
 			this.fileName = "config";
+			this.loader = new FileLoader();
 			this.getConfig ();
 		}
-		public void getConfig(){
-			TextAsset text = (TextAsset)FileLoader.getConfig(this.fileName);
-			if(text != null && text.text != null){
+		public ConfigReader (string fileName,IConfFileLoader loader){
+			this.fileName = fileName;
+			this.loader = loader;
+			this.getConfig ();
+		}
+
+
+		private void getConfig(){
+			string text = this.loader.getConfig(this.fileName);
+			if(text != null){
 				try{
-					this.conf = JsonMapper.ToObject<ConfFile> (text.text);
+					this.conf = JsonMapper.ToObject<ConfFile> (text);
 				} catch(JsonException e){
-					Debug.LogWarning(e.ToString());
 					this.conf = new ConfFile();
 				}
 			}else{
-				Debug.Log("no config file found");
 				this.conf = new ConfFile();
 			}
 

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp.Utils
 {
-	public class FileLoader{
+	public class FileLoader :IConfFileLoader{
 		private static UnityEngine.Object[] Objects;
 		public FileLoader (){
 
@@ -28,13 +28,18 @@ namespace AssemblyCSharp.Utils
 		/**
 		 * @param filename : base config file name. Should not have an extension. For example config.json will be "config".
 		 */
-		public static TextAsset getConfig(string filename){
-			return (TextAsset) Resources.Load (filename, typeof(TextAsset));
+		public string getConfig(string filename){
+			TextAsset asset = (TextAsset) Resources.Load (filename, typeof(TextAsset));
+			if(asset !=null){
+				return asset.text;
+			}else{
+				return null;
+			}
 		}
 		/**
 		 * Defaults to "config", aka config.json
 		 */
-		public static TextAsset getConfig(){
+		public string getConfig(){
 			return getConfig ("config");
 		}
 	}

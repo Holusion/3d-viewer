@@ -53,9 +53,8 @@ Sélectionnez le fichier et le dossier ainsi créés et intégrez les à une arc
 
 #Contrôles
 
-**TODO : ** explication de tous les contrôles possibles.
+**TODO : **
 
-
-##TODO
-
+ * explication de tous les contrôles possibles.
+ * Test d'execution des tests en export
  * ne pas planter si leap motion non installé

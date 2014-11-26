@@ -20,6 +20,12 @@ ExportedObj/
 *.unityproj
 *.booproj
 
+# =============== #
+# NUnit files     #
+# =============== #
+bin/
+test-results/
+
 # ============ #
 # OS generated #
 # ============ #

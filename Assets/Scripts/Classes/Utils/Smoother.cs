@@ -42,7 +42,6 @@ namespace AssemblyCSharp.Utils
 		 **/
 		public void Push(Vector3 val,float coefficient){
 			Vector3 [] array = this.movement.ToArray();
-
 			this.movement.Enqueue(smooth(val,array[array.Length-1],coefficient));
 		}
 
