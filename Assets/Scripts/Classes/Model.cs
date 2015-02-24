@@ -84,7 +84,7 @@ namespace AssemblyCSharp
 			var bounds = new Bounds (); // Variable non utilisée, mais elle doit etre instanciée -- TODO A vérifier
 			if (go.renderer != null) {
 				bounds = go.renderer.bounds;
-				Debug.Log ("Found parent bounds: " + bounds);
+				//Debug.Log ("Found parent bounds: " + bounds);
 			}
 			foreach (var c in go.GetComponentsInChildren<MeshRenderer>()) {
 				if (bounds.size == Vector3.zero) {
