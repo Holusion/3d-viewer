@@ -29,11 +29,13 @@ Référez vous à la [documentation](http://docs.unity3d.com/Manual/HOWTO-import
 
 ###Configuration
 
-Voir [documentation](Doc/configuration.md) associée
+Voir [documentation](Doc/configuration.md) associée.
 
 Etape optionnelle, permet de mieux adapter l'application à chaque modèle.
 
 Les options par défaut conviendront généralement pour une première prise en main.
+
+Pour commencer à modifier la configuration, copiez le [fichier d'exemple](Doc/config_sample.json)
 
 ###Test
 

@@ -33,6 +33,7 @@ Par exemple pour un objet **"obj1"** :
   ]
 }
 ```
+Il est possible de copier-coller le fichier de [configuration d'exemple](config_sample.json)
 Dans l'exemple ci dessus, l'objet *mySpecialLight* sera référencé comme lié à obj1. C'est à dire qu'il sera automatiquement désactivé pour tous les autres objets, mais activé pour ce dernier.
 
 
