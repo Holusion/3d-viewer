@@ -1,6 +1,9 @@
 {
   "options":{
-    
+    "autoRotation":0,
+    "switchAfter":0,
+    "exitAfter":0
+
   },
   "nodes":[
 
