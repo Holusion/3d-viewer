@@ -29,11 +29,10 @@ namespace AssemblyCSharp
 			this.models = models;
 			this.actions = new Queue<StoredAction>();
 			tcpClientConnected = new ManualResetEvent(false);
-			server = new TcpListener(IPAddress.Parse("127.0.0.1"),8080);
+			server = new TcpListener(IPAddress.Any,8080);
 			server.Start();
 			// Set the event to nonsignaled state.
 			tcpClientConnected.Reset();
-			Debug.Log("Waiting for a connection...");
 			server.BeginAcceptTcpClient(
 				new AsyncCallback(DoAcceptTcpClientCallback), server);
 			// Wait until a connection is made and processed before  
@@ -43,12 +42,13 @@ namespace AssemblyCSharp
 		public override bool update(){
 			for (var i=0; i < this.actions.Count; i++){
 				StoredAction action = this.actions.Dequeue();
+				parseActionDeffered(action);
 				if(action.duration > 0){
 					//If action isn't finished, re-enqueue it.
 					action.duration -= Time.deltaTime;
 					this.actions.Enqueue(action);
+				}else{
 				}
-				return parseActionDeffered(action);
 			}
 			return false;
 		}	
@@ -58,37 +58,36 @@ namespace AssemblyCSharp
 		private bool parseActionDeffered(StoredAction action){
 
 			Model model = this.models.getCurrent();
-
 			if(action.method == "rotation"){
 				string[] argv = action.args.Split(',');
 				if(argv.Length == 3){
 					model.setRotation(new Vector3(float.Parse(argv[0]),float.Parse(argv[1]),float.Parse(argv[2])));
-					return true;
 				}
 			}else if(action.method =="hide"){
 				model.hide (action.args);
-				return true;
-			}else if(action.method == "meshes"){
+			}else if(action.method.Equals("meshes")){
 				NetworkStream stream = action.client.Client.GetStream();
 				byte[] mes =System.Text.Encoding.ASCII.GetBytes(string.Join(",",this.models.getCurrent().getMeshes()));
-				stream.Write(mes, 0, mes.Length);
-				stream.Flush();
-				return true;
+				stream.BeginWrite(mes, 0, mes.Length, 
+				                           new AsyncCallback(WriteCallBack), 
+				                           action.client);
 			}
-			return false;
-
-		}
-		/**
-		 * Works out of the normal unity thread. return true if action have been treated immediately"
-		 */
-		private bool parseActionImmediate(string message, ClientData cli){
-
-			//Model model = this.models.getCurrent();
-
-
-			return false;
 			
+			//action.client.Client.GetStream().Close();
+			//action.client.Client.Close();
+			return false;
+
 		}
+
+		public void WriteCallBack(IAsyncResult ar){
+			ClientData client = (ClientData) ar.AsyncState;
+			NetworkStream stream = client.Client.GetStream();
+			stream.EndWrite(ar);
+			stream.Close();
+			client.Client.Close();
+
+		}
+
 		// Process the client connection. 
 		public void DoAcceptTcpClientCallback(IAsyncResult ar) {
 			string completeMessage = "";
@@ -111,6 +110,8 @@ namespace AssemblyCSharp
 		}
 
 		public void ReadCallBack(IAsyncResult ar ){
+			
+
 			ClientData cli = (ClientData)ar.AsyncState;
 			NetworkStream stream = cli.Client.GetStream();
 			int bytesCount = stream.EndRead(ar);
@@ -123,6 +124,7 @@ namespace AssemblyCSharp
 				                          cli);  
 
 			}else{
+				cli.message = cli.message.ToLower().Replace('\n',';');
 				string[] messages = cli.message.Split(';');
 				foreach( string message in messages){
 					string[] parse = message.Split(' ');
