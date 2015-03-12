@@ -52,7 +52,26 @@ namespace AssemblyCSharp
 		public Vector3 getRotation (){
 			return this.obj.transform.eulerAngles;
 		}
+		public void hide(string name){
+			Debug.Log("hiding : "+name);
+			Transform target = this.obj.transform.Find(name);
+			if( target != null){
+				Debug.Log("found object to hide");
+				target.renderer.enabled = false;
+			}
+			foreach(Transform temp in this.obj.transform) { 
+				Debug.Log(temp);
+			} 
+		}
 
+		public string[] getMeshes(){
+			Transform[] transforms = this.obj.transform.GetComponentsInChildren<Transform>();
+			string[] meshes = new string[transforms.Length];
+			for (int i = 0; i < transforms.Length; i++){
+				meshes[i] = transforms[i].name;
+			}
+			return meshes;
+		}
 		public void setRotation(float x,float y, float z){
 			this.setRotation(new Vector3(x,y,z));
 		}

@@ -9,127 +9,139 @@
 //------------------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Leap;
 using UnityEngine;
+using AssemblyCSharp.Utils;
 namespace AssemblyCSharp
 {
 	public class LeapParser:BaseParser {
 		private Controller controller;
 		private Models models;
-		private float switchCount;
-		private float switchTimer;
-		public LeapParser (Models models){
-			this.models = models;
-			controller = new Controller();
-			//Enabling gestures
-			//controller.EnableGesture(Gesture.GestureType.TYPECIRCLE);
-			switchCount = 0f;
-			switchTimer = 0f;
+		private LimitedQueue<int> swipes;
+		private Smoother smoother;
+		private Frame previousFrame;
+		private float timer;
 
+
+		//private Vector previousPos;
+		public LeapParser (Models models){
+			swipes = new LimitedQueue<int>(5);
+			smoother = new Smoother();
+			this.models = models;
+			timer = 0f;
+			controller = new Controller();
+			// CONFIGURE LEAP ////////////////////
+			controller.EnableGesture(Gesture.GestureType.TYPESWIPE);
+			controller.Config.SetFloat("Gesture.Swipe.MinLength",150f); //DEFAULT 150f in mm
+			controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 500f); //DEFAULT 1000f in mm/s
+			controller.Config.Save();
 		}
 		/**
 		 * return true if leap is available and parsing suceed. False otherwise.
 		 * Simply a	replacement, instead of using onFrame, thus syncing with app's pace, if called in update() method.
 		 * */
 		public override bool update() {
+			Frame frame;
 			if(!controller.IsServiceConnected()){
 				return false;
 			}
 			if(!controller.IsConnected){
 				return false;
 			}
-			Frame frame = controller.Frame();
-			//HandList hands = frame.Hands;
-			//PointableList pointables = frame.Pointables;
-			//FingerList fingers = frame.Fingers;
-			//ToolList tools = frame.Tools;
+			frame = controller.Frame();
+
+
+			bool ret = rotation(frame);
+			if( !ret ){
+				ret = swipe (frame);
+			}
+			//previousFrame = frame;
+			return ret;
+		}
+
+
+		private bool swipe(Frame frame){
+			bool ret = false;
+			GestureList gestures;
+
+			if(timer>=0f){
+				timer -= Time.deltaTime;
+				ret = true; //We switched recently
+			}else{
+
+				if(previousFrame != null && previousFrame.IsValid){
+					gestures = frame.Gestures(previousFrame);
+				}else{
+					gestures = frame.Gestures();
+				}
+				foreach (Gesture gesture in gestures){
+					Debug.Log("gesture");
+					Debug.Log(gesture.Id);
+					Debug.Log(gesture.State);
+					if(Array.Find((int[])swipes.ToArray(),id=> id == gesture.Id) != gesture.Id && timer <0f){ //Check each time if timer is >0
+						swipes.Enqueue(gesture.Id);
+						SwipeGesture sw = new SwipeGesture(gesture);
+						if(Math.Abs(sw.Direction.x) > Math.Abs(sw.Direction.y)*2f ){
+							timer =2f;
+							models.next();
+							ret = true; //We are switching
+						}
+					}else if(gesture.State == Gesture.GestureState.STATESTOP){
+						//Gesture was already counted
+						timer = 0.5f;
+
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		private bool rotation(Frame frame){
+			bool ret = false;
 			Hand hand = frame.Hands.Frontmost;
-			change (hand);
-			return rotation(hand);
-
-
-		}
-		private bool change(Hand hand){
-			//Don't switch if we switched less than X seconds ago
-			if(switchTimer<1){
-				switchTimer+= Time.deltaTime;
-				return false;
-			}
-
-			if(hand.GrabStrength >=0.9f){
-				//We are switching
-				switchCount+=Time.deltaTime;
-				Debug.Log(switchCount);
-				if(switchCount>=0.5f){
-					models.next();
-					switchTimer=0f;
-					switchCount=0f;
-					return true;
-				}
-			}else if(switchCount>0f){
-				switchCount-=Time.deltaTime;
-			}
-			return false;
-		}
-		private bool rotation(Hand hand){
 			Model model = models.getCurrent();
-			Vector normal = hand.PalmNormal;
-			Vector origin = hand.StabilizedPalmPosition;
-			Vector3 rot = new Vector3(0,0,0);
-			//Correcting normal Z which is naturally a bit negative (+20%)
-			if(normal.z <0.6f){normal.z +=0.2f;}
-			if(normal.z>=0.6f){normal.z+=0.2f*(1-(normal.z-0.6f)*2.5f);}
-			float deadZone = 0.2f;
-			//Trimmed value (=0 on deadZone boundaries)
-			float nX = trim (normal.x,deadZone);
-			float nZ = -trim (normal.z,deadZone);
-			//Absolute trimmed values
-			float nXa = Math.Abs(nX);
-			float nZa = Math.Abs(nZ);
-			//Signs
-			float nXSign = Math.Sign(normal.x);
-			
-			//origin values
-			//Corrections : normalize origin.
-			//origin.y =0;
-			origin = origin.Normalized;
-			float oX = -trim(origin.x,deadZone);
-			float oZ = trim(origin.z,deadZone);
-			
-			float oXa = Math.Abs(oX);
-			float oZa = Math.Abs(oZ);
-			//Signs
-			float oXSign = -Math.Sign(origin.x);
-			
-			if(nXSign == oXSign ){
-				if( nXa > nZa*1.5){
-					rot.y += nX;
-				}else if(oXa >oZa*1.5){
-					rot.y += oX;
-				}
-			}else {
-				if( nZa > nXa*1.5 ){
-					rot.x += nZ;
-				}else if ( oZa >oXa*1.5 ){
-					rot.x += oZ;
-				}
-			}
-			
-			rot = rot*2; //Scale up to match with keyboard control sensibility.
-			model.setRotation(rot);
-			if(!rot.Equals(Vector3.zero)){
-				return true;
+			//We have at least progressed 1 frame
+			if (hand.PinchStrength>=1f ||(hand.PinchStrength>0.8f && hand.GrabStrength == 1f)){
+				smoother.Push(getRotation(hand));
+				ret = true;
+			}else if(hand.PinchStrength >0.95f){
+				//Might be a pinch ... or not. So just minimize effect.
+				smoother.Push(getRotation(hand),0.25f);
+				ret = true;
 			}else{
-				return false;
+				smoother.Push(Vector3.zero,0.25f);
 			}
-		}
-		private float trim(float val,float trim){
-			if(Math.Abs(val)>=Math.Abs(trim)){
-				return Math.Sign(val) * ( Math.Abs(val)-Math.Abs(trim) );
+			//Debug.Log(smoother.Movement);
+			model.setRotation(smoother.Movement*Time.deltaTime);
+			
+			
+			return ret;
+		}		
+		private Vector3 getRotation(Hand hand){
+			Vector3 ret;
+			if(hand.IsValid && previousFrame != null && previousFrame.Hand(hand.Id).IsValid && hand.TimeVisible >0.1f){
+				float framePeriod, z;
+				Vector velocity;
+				framePeriod =  (float)((hand.Frame.Timestamp - previousFrame.Timestamp)/1000)/1000f;
+				velocity = hand.Translation(previousFrame)*0.7f/framePeriod;
+				z = hand.RotationAngle(previousFrame,Vector.Backward)*30f/framePeriod;
+				if(!float.IsNaN(velocity.x)){ //TODO UGLY Hack
+					ret = new Vector3(velocity.y,velocity.x,z);
+				}else{
+					ret = new Vector3(0,0,0);
+				}
 			}else{
-				return 0f;
+				ret = new Vector3(0,0,0);
 			}
+			//this.previousPos = hand.StabilizedPalmPosition;
+			this.previousFrame = hand.Frame;
+			//Debug.Log(ret);
+
+			return ret;
 		}
+
 
 	}
 }
