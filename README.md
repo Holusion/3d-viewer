@@ -14,6 +14,8 @@ téléchargez le projet sous forme [d'archive](https://github.com/Holusion/3d-vi
 
 Ouvrez le avec Unity3D (**FREE** ou **PRO**, testé à partir de 4.5.1f3).
 
+Ouvrez la scène qui correspond au produit ciblé : **Prisme** ou **Focus**. Les scènes sont situées dans le dossier ```Assets/```.
+
 Faites un essai ```ctrl+P```. Par défaut, une modélisation de la terre devrait apparaitre et être [contrôlable](#contrôles).
 Dès que vous aurez importé d'autres objets, celui-ci sera retiré automatiquement.
 
